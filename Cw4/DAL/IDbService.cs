@@ -2,12 +2,12 @@
 
 namespace Cw4.DAL
 {
-    public interface IDbService<T>
+    public interface IDbService<T, in TI>
     {
         public IEnumerable<T> GetEntries();
-        public T GetEntry(int id);
-        public int NextId();
-        public void AddEntry(T entryToAdd);
-        public void RemoveEntry(T entryToRemove);
+        public T GetEntry(TI id);
+        public int AddEntry(T entryToAdd);
+        public int UpdateEntry(T entryToUpdate);
+        public int RemoveEntry(TI idToRemove);
     }
 }

@@ -2,25 +2,10 @@
 {
     public class Student
     {
-        private int _idStudent;
-
-        public int IdStudent
-        {
-            get => _idStudent;
-            set
-            {
-                _idStudent = value;
-                IndexNumber = $"s{value}";
-            }
-        }
-
+        public string IndexNumber { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string IndexNumber { get; private set; }
-
-        public override string ToString()
-        {
-            return $"{IdStudent}, {FirstName} {LastName}, {IndexNumber}";
-        }
+        public string BirthDate { get; set; }
+        public int IdEnrollment { get; set; }
     }
 }
