@@ -6,7 +6,7 @@ using Cw4.Models;
 
 namespace Cw4.DAL
 {
-    public class MssqlDbService : IDbService<Student, string>
+    public class MssqlDbService : IDbStudentService
     {
         private const string ConnectionString = "Data Source=db-mssql;Initial Catalog=s18277;Integrated Security=True";
         private const string SelectQuery = "SELECT * FROM Student";
@@ -21,23 +21,30 @@ namespace Cw4.DAL
 
         private const string DeleteQuery = "DELETE FROM Student WHERE IndexNumber = @IndexNumber";
 
+        private const string StartedStudiesQuery = "SELECT IndexNumber, FirstName, LastName, BirthDate, Name, " +
+                                                   "Semester, StartDate FROM Student INNER JOIN Enrollment on " +
+                                                   "Student.IdEnrollment = Enrollment.IdEnrollment INNER JOIN " +
+                                                   "Studies on Studies.IdStudy = Enrollment.IdStudy " +
+                                                   "WHERE IndexNumber = @IndexNumber";
+
         public IEnumerable<Student> GetEntries()
         {
             var students = new List<Student>();
             using var sqlConnection = new SqlConnection(ConnectionString);
             using var sqlCommand = new SqlCommand {Connection = sqlConnection, CommandText = SelectQuery};
+            Console.WriteLine(sqlCommand.CommandText);
             sqlConnection.Open();
             var sqlDataReader = sqlCommand.ExecuteReader();
             while (sqlDataReader.Read()) students.Add(SqlDataReaderToStudent(sqlDataReader));
             return students;
         }
 
-        public Student GetEntry(string id)
+        public Student GetEntry(string indexNumber)
         {
             using var sqlConnection = new SqlConnection(ConnectionString);
             using var sqlCommand = new SqlCommand
                 {Connection = sqlConnection, CommandText = $"{SelectQuery} WHERE IndexNumber = @IndexNumber"};
-            sqlCommand.Parameters.AddWithValue("IndexNumber", id);
+            sqlCommand.Parameters.AddWithValue("IndexNumber", indexNumber);
             sqlConnection.Open();
             var sqlDataReader = sqlCommand.ExecuteReader();
             return !sqlDataReader.Read() ? null : SqlDataReaderToStudent(sqlDataReader);
@@ -68,6 +75,26 @@ namespace Cw4.DAL
             sqlCommand.Parameters.AddWithValue("IndexNumber", idToRemove);
             sqlConnection.Open();
             return sqlCommand.ExecuteNonQuery();
+        }
+
+        public StartedStudies GetStartedStudies(string indexNumber)
+        {
+            using var sqlConnection = new SqlConnection(ConnectionString);
+            using var sqlCommand = new SqlCommand {Connection = sqlConnection, CommandText = StartedStudiesQuery};
+            sqlCommand.Parameters.AddWithValue("indexNumber", indexNumber);
+            sqlConnection.Open();
+            var sqlDataReader = sqlCommand.ExecuteReader();
+            if (!sqlDataReader.Read()) return null;
+            return new StartedStudies
+            {
+                IndexNumber = sqlDataReader["IndexNumber"].ToString(),
+                FirstName = sqlDataReader["FirstName"].ToString(),
+                LastName = sqlDataReader["LastName"].ToString(),
+                BirthDate = DateTime.Parse(sqlDataReader["BirthDate"].ToString()!).ToShortDateString(),
+                Name = sqlDataReader["Name"].ToString(),
+                Semester = int.Parse(sqlDataReader["Semester"].ToString()!),
+                StartDate = DateTime.Parse(sqlDataReader["StartDate"].ToString()!).ToShortDateString()
+            };
         }
 
         private static Student SqlDataReaderToStudent(IDataRecord sqlDataReader)

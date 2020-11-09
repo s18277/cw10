@@ -8,9 +8,9 @@ namespace Cw4.Controllers
     [Route("students")]
     public class StudentsController : ControllerBase
     {
-        private static IDbService<Student, string> _dbService;
+        private static IDbStudentService _dbService;
 
-        public StudentsController(IDbService<Student, string> dbService)
+        public StudentsController(IDbStudentService dbService)
         {
             _dbService = dbService;
         }
@@ -24,7 +24,7 @@ namespace Cw4.Controllers
         [HttpGet("{idStudent}")]
         public IActionResult GetStudent([FromRoute] string idStudent)
         {
-            var student = _dbService.GetEntry(idStudent);
+            var student = _dbService.GetStartedStudies(idStudent);
             if (student == null) return NotFound($"Nie odnaleziono studenta o id: {idStudent}!");
             return Ok(student);
         }
