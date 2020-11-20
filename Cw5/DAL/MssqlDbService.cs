@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using Cw4.Models;
+using Cw5.Models;
 
-namespace Cw4.DAL
+namespace Cw5.DAL
 {
     public class MssqlDbService : IDbStudentService
     {

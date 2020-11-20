@@ -1,8 +1,8 @@
-﻿using Cw4.DAL;
-using Cw4.Models;
+﻿using Cw5.DAL;
+using Cw5.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Cw4.Controllers
+namespace Cw5.Controllers
 {
     [ApiController]
     [Route("students")]

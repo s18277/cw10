@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Cw4.DAL
+namespace Cw5.DAL
 {
     public interface IDbService<T, in TI>
     {

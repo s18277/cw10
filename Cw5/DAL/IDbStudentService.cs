@@ -1,6 +1,6 @@
-﻿using Cw4.Models;
+﻿using Cw5.Models;
 
-namespace Cw4.DAL
+namespace Cw5.DAL
 {
     public interface IDbStudentService : IDbService<Student, string>
     {
