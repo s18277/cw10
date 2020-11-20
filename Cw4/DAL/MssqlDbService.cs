@@ -90,10 +90,10 @@ namespace Cw4.DAL
                 IndexNumber = sqlDataReader["IndexNumber"].ToString(),
                 FirstName = sqlDataReader["FirstName"].ToString(),
                 LastName = sqlDataReader["LastName"].ToString(),
-                BirthDate = DateTime.Parse(sqlDataReader["BirthDate"].ToString()!).ToShortDateString(),
+                BirthDate = DateTime.Parse(sqlDataReader["BirthDate"].ToString()!),
                 Name = sqlDataReader["Name"].ToString(),
                 Semester = int.Parse(sqlDataReader["Semester"].ToString()!),
-                StartDate = DateTime.Parse(sqlDataReader["StartDate"].ToString()!).ToShortDateString()
+                StartDate = DateTime.Parse(sqlDataReader["StartDate"].ToString()!)
             };
         }
 
