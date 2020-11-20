@@ -104,7 +104,7 @@ namespace Cw4.DAL
                 IndexNumber = sqlDataReader["IndexNumber"].ToString(),
                 FirstName = sqlDataReader["FirstName"].ToString(),
                 LastName = sqlDataReader["LastName"].ToString(),
-                BirthDate = DateTime.Parse(sqlDataReader["BirthDate"].ToString()!).ToShortDateString(),
+                BirthDate = DateTime.Parse(sqlDataReader["BirthDate"].ToString()!),
                 IdEnrollment = int.Parse(sqlDataReader["IdEnrollment"].ToString()!)
             };
         }
