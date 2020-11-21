@@ -1,4 +1,4 @@
-using Cw5.DAL;
+using Cw5.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -19,7 +19,7 @@ namespace Cw5
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDbStudentService, MssqlDbService>();
+            services.AddScoped<IDbStudentService, MssqlDbStudentService>();
             services.AddControllers();
         }
 
