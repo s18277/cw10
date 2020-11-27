@@ -23,5 +23,14 @@ namespace Cw6.Controllers
                 return Created($"/api/students/{newStudentRequest.IndexNumber}", enrollmentResult.Enrollment);
             return BadRequest(enrollmentResult.Error);
         }
+
+        [HttpPost("promotions")]
+        public IActionResult PromoteStudents(PromoteStudentsRequest promoteStudentsRequest)
+        {
+            var newEnrollment = _dbService.PromoteStudents(promoteStudentsRequest);
+            if (newEnrollment != null) return Created("/api/students", newEnrollment);
+            return BadRequest($"Nie ma wpisu w bazie danych o kierunku '{promoteStudentsRequest.Studies}' " +
+                              $"i semestrze {promoteStudentsRequest.Semester}");
+        }
     }
 }
