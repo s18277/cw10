@@ -2,6 +2,7 @@ using System;
 using System.Data.SqlClient;
 using Cw6.DTOs.Requests;
 using Cw6.DTOs.ResultContainers;
+using Cw6.Exceptions;
 using Cw6.Models;
 
 namespace Cw6.Services
@@ -135,11 +136,5 @@ namespace Cw6.Services
             if (_sqlCommand.ExecuteNonQuery() == 0)
                 throw new SqlInsertException("Błąd podczas tworzenia nowego wpisu w tablicy \"Students\"!");
         }
-    }
-
-    internal class SqlInsertException : Exception
-    {
-        public SqlInsertException() { }
-        public SqlInsertException(string message) : base(message) { }
     }
 }
