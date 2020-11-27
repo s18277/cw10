@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 
 namespace Cw6
 {
@@ -26,6 +27,18 @@ namespace Cw6
             services.AddTransient<ILoggingService, FileLoggingService>();
             services.AddScoped<IDbStudentService, MssqlDbStudentService>();
             services.AddControllers();
+
+            // Register the Swagger generator, defining Swagger documents
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Students API",
+                    Version = "v1",
+                    Description = "Students API prepared by Paweł Rutkowski (s18277) for purposes of APBD.",
+                    Contact = new OpenApiContact {Name = "Paweł Rutkowski s18277"}
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -33,6 +46,10 @@ namespace Cw6
         {
             if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
 
+            app.UseSwagger();
+            app.UseSwaggerUI(options => { options.SwaggerEndpoint("/swagger/v1/swagger.json", "Students API"); });
+
+            // Logging middleware is enabled after Swagger one to avoid logging requests for documentation.
             app.UseMiddleware<LoggingMiddleware>();
 
             app.Use(async (context, next) =>
