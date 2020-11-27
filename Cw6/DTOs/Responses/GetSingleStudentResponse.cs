@@ -1,6 +1,6 @@
 using System;
 
-namespace Cw5.DTOs.Responses
+namespace Cw6.DTOs.Responses
 {
     public class GetSingleStudentResponse
     {

@@ -1,10 +1,10 @@
 using System;
 using System.Data.SqlClient;
-using Cw5.DTOs.Requests;
-using Cw5.DTOs.ResultContainers;
-using Cw5.Models;
+using Cw6.DTOs.Requests;
+using Cw6.DTOs.ResultContainers;
+using Cw6.Models;
 
-namespace Cw5.Services
+namespace Cw6.Services
 {
     internal class MssqlDbEnrollmentStudentServiceHelper
     {

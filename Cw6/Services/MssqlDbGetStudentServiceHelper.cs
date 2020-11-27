@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using Cw5.DTOs.Responses;
-using Cw5.Models;
+using Cw6.DTOs.Responses;
+using Cw6.Models;
 
-namespace Cw5.Services
+namespace Cw6.Services
 {
     internal class MssqlDbGetStudentServiceHelper
     {

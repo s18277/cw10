@@ -1,7 +1,7 @@
-﻿using Cw5.Services;
+﻿using Cw6.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Cw5.Controllers
+namespace Cw6.Controllers
 {
     [ApiController]
     [Route("api/students")]

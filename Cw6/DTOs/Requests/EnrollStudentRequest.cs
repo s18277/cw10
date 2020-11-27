@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Cw5.DTOs.Requests
+namespace Cw6.DTOs.Requests
 {
     public class EnrollStudentRequest
     {

@@ -1,6 +1,6 @@
-using Cw5.Models;
+using Cw6.Models;
 
-namespace Cw5.DTOs.ResultContainers
+namespace Cw6.DTOs.ResultContainers
 {
     public class EnrollmentResult
     {

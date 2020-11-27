@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "Cw5": {
+    "Cw6": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "api/students",
