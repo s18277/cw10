@@ -1,3 +1,4 @@
+using Cw6.Middlewares;
 using Cw6.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -22,6 +23,7 @@ namespace Cw6
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<ILoggingService, FileLoggingService>();
             services.AddScoped<IDbStudentService, MssqlDbStudentService>();
             services.AddControllers();
         }
@@ -30,6 +32,8 @@ namespace Cw6
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IDbStudentService dbService)
         {
             if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
+
+            app.UseMiddleware<LoggingMiddleware>();
 
             app.Use(async (context, next) =>
             {
