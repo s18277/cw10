@@ -15,14 +15,16 @@ BEGIN
                 RETURN
             END
 
-        DECLARE @IdOldEnrollment INT = (SELECT IdEnrollment FROM Enrollment WHERE Semester = @Semester AND IdStudy = @IdStudies)
+        DECLARE @IdOldEnrollment INT = (SELECT IdEnrollment FROM Enrollment
+                                        WHERE Semester = @Semester AND IdStudy = @IdStudies)
         IF @IdOldEnrollment IS NULL
             BEGIN
                 ROLLBACK
                 RETURN
             END
 
-        DECLARE @IdPromotedEnrollment INT = (SELECT IdEnrollment FROM Enrollment WHERE Semester = @Semester + 1 AND IdStudy = @IdStudies)
+        DECLARE @IdPromotedEnrollment INT = (SELECT IdEnrollment FROM Enrollment
+                                             WHERE Semester = @Semester + 1 AND IdStudy = @IdStudies)
         IF @IdPromotedEnrollment IS NULL
             BEGIN
                 SET @IdPromotedEnrollment = (SELECT TOP 1 IdEnrollment FROM Enrollment ORDER BY IdEnrollment DESC) + 1
@@ -34,5 +36,7 @@ BEGIN
 
     COMMIT
 
-    SELECT * FROM Enrollment WHERE IdEnrollment = @IdPromotedEnrollment
+    SELECT IdEnrollment, Semester, Enrollment.IdStudy, Name, StartDate FROM Enrollment
+            INNER JOIN Studies on Studies.IdStudy = Enrollment.IdStudy
+            WHERE IdEnrollment = @IdPromotedEnrollment
 END;

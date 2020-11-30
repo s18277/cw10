@@ -94,6 +94,7 @@ namespace Cw5.Services
                     IdEnrollment = (int) sqlDataReader["IdEnrollment"],
                     Semester = (int) sqlDataReader["Semester"],
                     IdStudy = (int) sqlDataReader["IdStudy"],
+                    StudiesName = _enrollRequest.Studies,
                     StartDate = DateTime.Parse(sqlDataReader["StartDate"].ToString()!)
                 };
             return PrepareNewEnrollment(studies);
