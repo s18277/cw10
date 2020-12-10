@@ -28,8 +28,8 @@ BEGIN
         IF @IdPromotedEnrollment IS NULL
             BEGIN
                 SET @IdPromotedEnrollment = (SELECT TOP 1 IdEnrollment FROM Enrollment ORDER BY IdEnrollment DESC) + 1
-                INSERT INTO Enrollment (IdEnrollment, Semester, IdStudy, StartDate)
-                VALUES (@IdPromotedEnrollment, @Semester + 1, @IdStudies, GETDATE())
+                INSERT INTO Enrollment (Semester, IdStudy, StartDate)
+                VALUES (@Semester + 1, @IdStudies, GETDATE())
             END
 
         UPDATE Student SET IdEnrollment = @IdPromotedEnrollment WHERE IdEnrollment = @IdOldEnrollment

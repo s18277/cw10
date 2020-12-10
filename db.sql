@@ -4,28 +4,41 @@
 -- tables
 -- Table: Enrollment
 CREATE TABLE Enrollment (
-    IdEnrollment int  NOT NULL,
-    Semester int  NOT NULL,
-    IdStudy int  NOT NULL,
-    StartDate date  NOT NULL,
-    CONSTRAINT Enrollment_pk PRIMARY KEY  (IdEnrollment)
+    IdEnrollment int IDENTITY(1,1) PRIMARY KEY,
+    Semester int NOT NULL,
+    IdStudy int NOT NULL,
+    StartDate date NOT NULL
 );
 
 -- Table: Student
 CREATE TABLE Student (
-    IndexNumber nvarchar(100)  NOT NULL,
-    FirstName nvarchar(100)  NOT NULL,
-    LastName nvarchar(100)  NOT NULL,
-    BirthDate date  NOT NULL,
-    IdEnrollment int  NOT NULL,
-    CONSTRAINT Student_pk PRIMARY KEY  (IndexNumber)
+    IdStudent int IDENTITY(1,1) PRIMARY KEY,
+    IndexNumber nvarchar(MAX) NOT NULL,
+    FirstName nvarchar(MAX) NOT NULL,
+    LastName nvarchar(MAX) NOT NULL,
+    BirthDate date NOT NULL,
+    PasswordHashSalt nvarchar(MAX) NOT NULL,
+    RefreshToken nvarchar(MAX),
+    IdEnrollment int NOT NULL
 );
 
 -- Table: Studies
 CREATE TABLE Studies (
-    IdStudy int  NOT NULL,
-    Name nvarchar(100)  NOT NULL,
-    CONSTRAINT Studies_pk PRIMARY KEY  (IdStudy)
+    IdStudy int IDENTITY(1,1) PRIMARY KEY,
+    Name nvarchar(MAX) NOT NULL
+);
+
+-- Table: Role
+CREATE TABLE Role (
+    IdRole int IDENTITY(1,1) PRIMARY KEY,
+    RoleName nvarchar(450) NOT NULL UNIQUE
+);
+
+-- Table: RoleStudent
+CREATE TABLE RoleStudent (
+    IdRole int PRIMARY KEY,
+    IdStudent int PRIMARY KEY,
+    CONSTRAINT RoleStudent_PK PRIMARY KEY (IdRole,IdStudent)
 );
 
 -- foreign keys
@@ -39,5 +52,12 @@ ALTER TABLE Student ADD CONSTRAINT Student_Enrollment
     FOREIGN KEY (IdEnrollment)
     REFERENCES Enrollment (IdEnrollment);
 
--- End of file.
+-- Reference: RoleStudent_Role (tables: RoleStudent)
+ALTER TABLE RoleStudent ADD CONSTRAINT RoleStudent_Role
+    FOREIGN KEY (IdRole)
+        REFERENCES Role (IdRole);
 
+-- Reference: RoleStudent_Student (tables: RoleStudent)
+ALTER TABLE RoleStudent ADD CONSTRAINT RoleStudent_Student
+    FOREIGN KEY (IdStudent)
+        REFERENCES Student (IdStudent);
