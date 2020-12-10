@@ -5,7 +5,7 @@ using System.Data.SqlClient;
 using Cw7.DTOs.Responses;
 using Cw7.Models;
 
-namespace Cw7.Services
+namespace Cw7.Services.DatabaseServices.MssqlDbStudentServiceHelpers
 {
     internal class MssqlDbGetStudentServiceHelper
     {
@@ -13,9 +13,15 @@ namespace Cw7.Services
             "SELECT IndexNumber, FirstName, LastName, BirthDate, IdEnrollment FROM Student";
 
         private const string StartedStudiesQuery =
-            "SELECT IndexNumber, FirstName, LastName, BirthDate, Name, Semester, StartDate, PasswordHash " +
+            "SELECT IndexNumber, FirstName, LastName, BirthDate, Name, Semester, StartDate " +
             "FROM Student INNER JOIN Enrollment on Student.IdEnrollment = Enrollment.IdEnrollment INNER JOIN " +
             "Studies on Studies.IdStudy = Enrollment.IdStudy WHERE IndexNumber = @IndexNumber";
+
+        private const string StudentAuthenticationData =
+            "SELECT IndexNumber, FirstName, LastName, SaltPasswordHash, RefreshToken, RoleName FROM Student " +
+            "FULL JOIN RoleStudent on Student.IdStudent = RoleStudent.IdStudent " +
+            "FULL JOIN Role on RoleStudent.IdRole = Role.IdRole " +
+            "WHERE IndexNumber = @IndexNumber";
 
         private readonly SqlCommand _sqlCommand;
 
@@ -53,17 +59,27 @@ namespace Cw7.Services
 
         public SingleStudentAuthenticationData GetStudentsAuthenticationData(string indexNumber)
         {
-            _sqlCommand.CommandText = StartedStudiesQuery;
+            _sqlCommand.CommandText = StudentAuthenticationData;
             _sqlCommand.Parameters.AddWithValue("indexNumber", indexNumber);
             var sqlDataReader = _sqlCommand.ExecuteReader();
             if (!sqlDataReader.Read()) return null;
-            return new SingleStudentAuthenticationData
+            var authenticationData = new SingleStudentAuthenticationData
             {
                 IndexNumber = sqlDataReader["IndexNumber"].ToString(),
                 FirstName = sqlDataReader["FirstName"].ToString(),
                 LastName = sqlDataReader["LastName"].ToString(),
-                PasswordHash = sqlDataReader["PasswordHash"].ToString()
+                SaltPasswordHash = sqlDataReader["SaltPasswordHash"].ToString(),
+                RefreshToken = sqlDataReader["RefreshToken"]?.ToString()
             };
+            var roles = new List<string>();
+            do
+            {
+                var roleName = sqlDataReader["RoleName"]?.ToString();
+                if (!string.IsNullOrWhiteSpace(roleName)) roles.Add(roleName);
+            } while (sqlDataReader.Read());
+
+            authenticationData.Roles = roles.ToArray();
+            return authenticationData;
         }
 
         private static Student SqlDataReaderToStudent(IDataRecord sqlDataReader)

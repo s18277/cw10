@@ -1,5 +1,10 @@
+using System.Linq;
 using Cw7.Middlewares;
-using Cw7.Services;
+using Cw7.Services.AuthenticationServices;
+using Cw7.Services.DatabaseServices;
+using Cw7.Services.EncryptionServices;
+using Cw7.Services.LoggingServices;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -17,6 +22,7 @@ namespace Cw7
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            TokenValidationParametersGenerator.AddConfiguration(configuration);
         }
 
         public IConfiguration Configuration { get; }
@@ -24,8 +30,14 @@ namespace Cw7
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options => options.TokenValidationParameters =
+                    TokenValidationParametersGenerator.GenerateTokenValidationParameters());
+
             services.AddTransient<ILoggingService, FileLoggingService>();
             services.AddScoped<IDbStudentService, MssqlDbStudentService>();
+            services.AddScoped<IAuthenticationService, MssqlDbAuthenticationService>();
+            services.AddSingleton<IEncryptionService, SaltedHashEncryptionService>();
             services.AddControllers();
 
             // Register the Swagger generator, defining Swagger documents
@@ -56,6 +68,12 @@ namespace Cw7
 
             app.Use(async (context, next) =>
             {
+                if (dbService.GetAllStudents().ToList().Count == 0)
+                {
+                    await next();
+                    return;
+                }
+
                 if (!context.Request.Headers.ContainsKey(IndexHeader))
                 {
                     context.Response.StatusCode = StatusCodes.Status401Unauthorized;
@@ -75,6 +93,8 @@ namespace Cw7
             });
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

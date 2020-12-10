@@ -1,4 +1,4 @@
-﻿namespace Cw7.Services
+﻿namespace Cw7.Services.LoggingServices
 {
     public interface ILoggingService
     {

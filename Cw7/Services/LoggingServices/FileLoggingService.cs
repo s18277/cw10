@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Cw7.Services
+namespace Cw7.Services.LoggingServices
 {
     public class FileLoggingService : ILoggingService
     {

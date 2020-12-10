@@ -2,7 +2,7 @@
 using System.Text;
 using System.Threading.Tasks;
 using Cw7.Models;
-using Cw7.Services;
+using Cw7.Services.LoggingServices;
 using Microsoft.AspNetCore.Http;
 
 namespace Cw7.Middlewares

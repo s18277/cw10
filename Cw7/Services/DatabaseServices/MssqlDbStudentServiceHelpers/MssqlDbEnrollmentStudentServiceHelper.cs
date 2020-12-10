@@ -1,12 +1,12 @@
 using System;
+using System.Data;
 using System.Data.SqlClient;
 using Cw7.DTOs.Requests;
 using Cw7.DTOs.ResultContainers;
 using Cw7.Exceptions;
-using Cw7.Handlers;
 using Cw7.Models;
 
-namespace Cw7.Services
+namespace Cw7.Services.DatabaseServices.MssqlDbStudentServiceHelpers
 {
     internal class MssqlDbEnrollmentStudentServiceHelper
     {
@@ -21,30 +21,36 @@ namespace Cw7.Services
             "INNER JOIN Studies on Studies.IdStudy = Enrollment.IdStudy " +
             "WHERE Studies.Name = @StudiesName AND Semester = 1";
 
-        private const string SelectLastIdEnrollment =
-            "SELECT TOP 1 IdEnrollment FROM Enrollment ORDER BY IdEnrollment DESC;";
+        private const string SelectLastAddedEnrollment =
+            "SELECT IdEnrollment, Semester, Enrollment.IdStudy, StartDate FROM Enrollment " +
+            "INNER JOIN Studies on Studies.IdStudy = Enrollment.IdStudy " +
+            "WHERE Studies.Name = @StudiesName AND Semester = 1 AND StartDate = @EnrollmentDate";
 
         private const string InsertFirstSemesterEnrollmentForStudiesQuery =
-            "INSERT INTO Enrollment (IdEnrollment, Semester, IdStudy, StartDate) " +
-            "SELECT @IdEnrollment, 1, IdStudy, @EnrollmentDate FROM Studies WHERE Studies.Name = @StudiesName";
+            "INSERT INTO Enrollment (Semester, IdStudy, StartDate) SELECT 1, IdStudy, @EnrollmentDate FROM Studies " +
+            "WHERE Studies.Name = @StudiesName";
 
         private const string InsertStudentQuery =
-            "INSERT INTO Student(IndexNumber, FirstName, LastName, BirthDate, IdEnrollment, PasswordHash) " +
-            "VALUES (@IndexNumber, @FirstName, @LastName, @BirthDate, @IdEnrollment, @PasswordHash)";
+            "INSERT INTO Student(IndexNumber, FirstName, LastName, BirthDate, IdEnrollment, SaltPasswordHash) " +
+            "VALUES (@IndexNumber, @FirstName, @LastName, @BirthDate, @IdEnrollment, @SaltPasswordHash)";
+
+        private readonly Func<string, string> _encryptFunction;
 
         private readonly EnrollStudentRequest _enrollRequest;
         private readonly SqlCommand _sqlCommand;
         private string _enrollmentDate;
 
-        public MssqlDbEnrollmentStudentServiceHelper(SqlCommand sqlCommand, EnrollStudentRequest enrollRequest)
+        public MssqlDbEnrollmentStudentServiceHelper(SqlCommand sqlCommand, EnrollStudentRequest enrollRequest,
+            Func<string, string> encryptFunction)
         {
             _sqlCommand = sqlCommand;
             _enrollRequest = enrollRequest;
+            _encryptFunction = encryptFunction;
         }
 
         public EnrollmentResult Enroll()
         {
-            _enrollmentDate = DateTime.Now.ToLongDateString();
+            _enrollmentDate = DateTime.Now.ToShortDateString();
             var studies = GetStudies();
             if (studies == null)
                 return new EnrollmentResult {Error = $"Kierunek {_enrollRequest.Studies} nie istnieje!"};
@@ -91,39 +97,39 @@ namespace Cw7.Services
             _sqlCommand.CommandText = FirstSemesterEnrollmentForStudiesQuery;
             using var sqlDataReader = _sqlCommand.ExecuteReader();
             if (sqlDataReader.Read())
-                return new Enrollment
-                {
-                    IdEnrollment = (int) sqlDataReader["IdEnrollment"],
-                    Semester = (int) sqlDataReader["Semester"],
-                    IdStudy = (int) sqlDataReader["IdStudy"],
-                    StudiesName = _enrollRequest.Studies,
-                    StartDate = DateTime.Parse(sqlDataReader["StartDate"].ToString()!)
-                };
+                return SqlDataReaderToEnrollment(sqlDataReader, _enrollRequest.Studies);
+
+            sqlDataReader.Close();
             return PrepareNewEnrollment(studies);
         }
 
         private Enrollment PrepareNewEnrollment(Studies studies)
         {
             _sqlCommand.CommandText = InsertFirstSemesterEnrollmentForStudiesQuery;
-            var nextIdEnrollment = NextEnrollmentId();
-            _sqlCommand.Parameters.AddWithValue("IdEnrollment", nextIdEnrollment);
             _sqlCommand.Parameters.AddWithValue("EnrollmentDate", _enrollmentDate);
             if (_sqlCommand.ExecuteNonQuery() == 0)
                 throw new SqlInsertException("Błąd podczas tworzenia nowego wpisu w tablicy \"Enrollment\"!");
-            return new Enrollment
-            {
-                IdEnrollment = nextIdEnrollment,
-                Semester = 1,
-                IdStudy = studies.IdStudy,
-                StartDate = DateTime.Parse(_enrollmentDate)
-            };
+            return InsertedEnrollment(studies.Name);
         }
 
-        private int NextEnrollmentId()
+        private Enrollment InsertedEnrollment(string studiesName)
         {
-            _sqlCommand.CommandText = SelectLastIdEnrollment;
+            _sqlCommand.CommandText = SelectLastAddedEnrollment;
             using var sqlDataReader = _sqlCommand.ExecuteReader();
-            return sqlDataReader.Read() ? (int) sqlDataReader["IdEnrollment"] + 1 : 1;
+            sqlDataReader.Read();
+            return SqlDataReaderToEnrollment(sqlDataReader, studiesName);
+        }
+
+        private static Enrollment SqlDataReaderToEnrollment(IDataRecord sqlDataReader, string studiesName)
+        {
+            return new Enrollment
+            {
+                IdEnrollment = (int) sqlDataReader["IdEnrollment"],
+                Semester = (int) sqlDataReader["Semester"],
+                IdStudy = (int) sqlDataReader["IdStudy"],
+                StartDate = DateTime.Parse(sqlDataReader["StartDate"].ToString()!),
+                StudiesName = studiesName
+            };
         }
 
         private void InsertNewStudentIntoDb(Student newStudent)
@@ -132,7 +138,7 @@ namespace Cw7.Services
             _sqlCommand.Parameters.AddWithValue("FirstName", _enrollRequest.FirstName);
             _sqlCommand.Parameters.AddWithValue("LastName", _enrollRequest.LastName);
             _sqlCommand.Parameters.AddWithValue("BirthDate", _enrollRequest.BirthDate);
-            _sqlCommand.Parameters.AddWithValue("PasswordHash", EncryptingHandler.Encrypt(_enrollRequest.Password));
+            _sqlCommand.Parameters.AddWithValue("SaltPasswordHash", _encryptFunction(_enrollRequest.Password));
             if (!_sqlCommand.Parameters.Contains("IdEnrollment"))
                 _sqlCommand.Parameters.AddWithValue("IdEnrollment", newStudent.IdEnrollment);
             if (_sqlCommand.ExecuteNonQuery() == 0)
