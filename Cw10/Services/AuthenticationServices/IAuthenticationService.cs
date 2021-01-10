@@ -6,7 +6,7 @@ namespace Cw10.Services.AuthenticationServices
     public interface IAuthenticationService
     {
         JwtSecurityToken Login(string username, string password);
-        bool UpdateRefreshToken(string username, string refreshToken);
+        int UpdateRefreshToken(string username, string refreshToken);
         ClaimsPrincipal ValidateJwtAndGetClaimsPrincipal(string jwt);
         JwtSecurityToken RefreshJwt(string username, string refreshToken);
     }

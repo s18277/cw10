@@ -75,16 +75,29 @@ namespace Cw10.Services.DatabaseServices
                 }).FirstOrDefault();
         }
 
-        public bool UpdateRefreshToken(string username, string refreshToken)
+        public int UpdateRefreshToken(string username, string refreshToken)
         {
-            var student = new Student
-            {
-                IndexNumber = username,
-                RefreshToken = refreshToken
-            };
-            _dbContext.Attach(student);
-            _dbContext.Entry(student).Property("RefreshToken").IsModified = true;
-            return _dbContext.SaveChanges() != 0;
+            var student = _dbContext.Students.First(s => s.IndexNumber == username);
+            student.RefreshToken = refreshToken;
+            return _dbContext.SaveChanges();
+        }
+
+        public int UpdateStudent(string indexNumber, UpdateStudentRequest updateStudentRequest)
+        {
+            var student = _dbContext.Students.First(s => s.IndexNumber == indexNumber);
+            student.IndexNumber = updateStudentRequest.IndexNumber ?? student.IndexNumber;
+            student.FirstName = updateStudentRequest.FirstName ?? student.FirstName;
+            student.LastName = updateStudentRequest.LastName ?? student.LastName;
+            student.BirthDate = updateStudentRequest.BirthDate ?? student.BirthDate;
+            student.IdEnrollment = updateStudentRequest.IdEnrollment ?? student.IdEnrollment;
+            return _dbContext.SaveChanges();
+        }
+
+        public int DeleteStudent(string indexNumber)
+        {
+            var student = _dbContext.Students.First(s => s.IndexNumber == indexNumber);
+            _dbContext.Students.Remove(student);
+            return _dbContext.SaveChanges();
         }
     }
 }

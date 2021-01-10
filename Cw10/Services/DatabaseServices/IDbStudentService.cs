@@ -12,6 +12,8 @@ namespace Cw10.Services.DatabaseServices
         public EnrollmentResult EnrollStudent(EnrollStudentRequest newStudent);
         public EnrollmentDto PromoteStudents(PromoteStudentsRequest promoteStudentsRequest);
         public SingleStudentAuthenticationData GetStudentsAuthenticationData(string indexNumber);
-        public bool UpdateRefreshToken(string username, string refreshToken);
+        public int UpdateRefreshToken(string username, string refreshToken);
+        public int UpdateStudent(string indexNumber, UpdateStudentRequest updateStudentRequest);
+        public int DeleteStudent(string indexNumber);
     }
 }

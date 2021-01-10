@@ -37,7 +37,7 @@ namespace Cw10.Services.AuthenticationServices
                 : GenerateJwtFromAuthenticationData(studentAuthenticationData);
         }
 
-        public bool UpdateRefreshToken(string username, string refreshToken)
+        public int UpdateRefreshToken(string username, string refreshToken)
         {
             return _dbStudentService.UpdateRefreshToken(username, refreshToken);
         }

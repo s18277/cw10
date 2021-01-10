@@ -36,9 +36,9 @@ namespace Cw10
                     TokenValidationParametersGenerator.GenerateTokenValidationParameters());
 
             services.AddTransient<ILoggingService, FileLoggingService>();
-            services.AddScoped<IDbStudentService, EntityFrameworkCoreDbStudentService>();
-            services.AddScoped<StudentsDbContext, StudentsDbContext>();
-            services.AddScoped<IAuthenticationService, MssqlDbAuthenticationService>();
+            services.AddSingleton<IDbStudentService, EntityFrameworkCoreDbStudentService>();
+            services.AddSingleton<StudentsDbContext, StudentsDbContext>();
+            services.AddSingleton<IAuthenticationService, MssqlDbAuthenticationService>();
             services.AddSingleton<IEncryptionService, SaltedHashEncryptionService>();
             services.AddControllers();
 

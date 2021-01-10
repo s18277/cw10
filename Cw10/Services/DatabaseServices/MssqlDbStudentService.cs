@@ -8,22 +8,24 @@ using Cw10.DTOs.Responses;
 using Cw10.DTOs.ResultContainers;
 using Cw10.Services.DatabaseServices.MssqlDbStudentServiceHelpers;
 using Cw10.Services.EncryptionServices;
+using Microsoft.Extensions.Configuration;
 
 namespace Cw10.Services.DatabaseServices
 {
     public class MssqlDbStudentService : IDbStudentService
     {
-        private const string ConnectionString = "Data Source=db-mssql;Initial Catalog=s18277;Integrated Security=True";
+        private readonly string _connectionString;
         private readonly IEncryptionService _encryptionService;
 
-        public MssqlDbStudentService(IEncryptionService encryptionService)
+        public MssqlDbStudentService(IEncryptionService encryptionService, IConfiguration configuration)
         {
+            _connectionString = configuration["DatabaseConnectionString"];
             _encryptionService = encryptionService;
         }
 
         public IEnumerable<GetAllStudentsStudentResponse> GetAllStudents()
         {
-            using var sqlConnection = new SqlConnection(ConnectionString);
+            using var sqlConnection = new SqlConnection(_connectionString);
             using var sqlCommand = new SqlCommand {Connection = sqlConnection};
             sqlConnection.Open();
             return new MssqlDbGetStudentServiceHelper(sqlCommand).GetAllStudents().Select(student =>
@@ -39,7 +41,7 @@ namespace Cw10.Services.DatabaseServices
 
         public GetSingleStudentResponse GetStudent(string indexNumber)
         {
-            using var sqlConnection = new SqlConnection(ConnectionString);
+            using var sqlConnection = new SqlConnection(_connectionString);
             using var sqlCommand = new SqlCommand {Connection = sqlConnection};
             sqlConnection.Open();
             return new MssqlDbGetStudentServiceHelper(sqlCommand).GetStudent(indexNumber);
@@ -47,7 +49,7 @@ namespace Cw10.Services.DatabaseServices
 
         public EnrollmentResult EnrollStudent(EnrollStudentRequest newStudent)
         {
-            using var sqlConnection = new SqlConnection(ConnectionString);
+            using var sqlConnection = new SqlConnection(_connectionString);
             using var sqlCommand = new SqlCommand {Connection = sqlConnection};
             sqlConnection.Open();
             sqlCommand.Transaction = sqlConnection.BeginTransaction();
@@ -68,7 +70,7 @@ namespace Cw10.Services.DatabaseServices
 
         public EnrollmentDto PromoteStudents(PromoteStudentsRequest promoteStudentsRequest)
         {
-            using var sqlConnection = new SqlConnection(ConnectionString);
+            using var sqlConnection = new SqlConnection(_connectionString);
             using var sqlCommand = new SqlCommand("PromoteStudents", sqlConnection)
                 {CommandType = CommandType.StoredProcedure};
             sqlCommand.Parameters.AddWithValue("@Studies", promoteStudentsRequest.Studies);
@@ -88,15 +90,15 @@ namespace Cw10.Services.DatabaseServices
 
         public SingleStudentAuthenticationData GetStudentsAuthenticationData(string indexNumber)
         {
-            using var sqlConnection = new SqlConnection(ConnectionString);
+            using var sqlConnection = new SqlConnection(_connectionString);
             using var sqlCommand = new SqlCommand {Connection = sqlConnection};
             sqlConnection.Open();
             return new MssqlDbGetStudentServiceHelper(sqlCommand).GetStudentsAuthenticationData(indexNumber);
         }
 
-        public bool UpdateRefreshToken(string username, string refreshToken)
+        public int UpdateRefreshToken(string username, string refreshToken)
         {
-            using var sqlConnection = new SqlConnection(ConnectionString);
+            using var sqlConnection = new SqlConnection(_connectionString);
             using var sqlCommand = new SqlCommand
             {
                 Connection = sqlConnection,
@@ -105,7 +107,17 @@ namespace Cw10.Services.DatabaseServices
             sqlCommand.Parameters.AddWithValue("@RefreshToken", refreshToken);
             sqlCommand.Parameters.AddWithValue("@Username", username);
             sqlConnection.Open();
-            return sqlCommand.ExecuteNonQuery() != 0;
+            return sqlCommand.ExecuteNonQuery();
+        }
+
+        public int UpdateStudent(string indexNumber, UpdateStudentRequest updateStudentRequest)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int DeleteStudent(string indexNumber)
+        {
+            throw new NotImplementedException();
         }
     }
 }
