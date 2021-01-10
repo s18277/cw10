@@ -2,9 +2,10 @@ using System;
 using System.Data;
 using System.Data.SqlClient;
 using Cw10.DTOs.Requests;
+using Cw10.DTOs.Responses;
 using Cw10.DTOs.ResultContainers;
 using Cw10.Exceptions;
-using Cw10.ModelsManual;
+using Cw10.Models.StudentsDatabase;
 
 namespace Cw10.Services.DatabaseServices.MssqlDbStudentServiceHelpers
 {
@@ -74,13 +75,13 @@ namespace Cw10.Services.DatabaseServices.MssqlDbStudentServiceHelpers
             };
         }
 
-        private Studies GetStudies()
+        private Study GetStudies()
         {
             _sqlCommand.CommandText = StudiesFilterNameQuery;
             _sqlCommand.Parameters.AddWithValue("StudiesName", _enrollRequest.Studies);
             using var sqlDataReader = _sqlCommand.ExecuteReader();
             return sqlDataReader.Read()
-                ? new Studies {IdStudy = (int) sqlDataReader["IdStudy"], Name = sqlDataReader["Name"].ToString()}
+                ? new Study {IdStudy = (int) sqlDataReader["IdStudy"], Name = sqlDataReader["Name"].ToString()}
                 : null;
         }
 
@@ -92,7 +93,7 @@ namespace Cw10.Services.DatabaseServices.MssqlDbStudentServiceHelpers
             return sqlDataReader.Read();
         }
 
-        private Enrollment GetEnrollmentForNewStudent(Studies studies)
+        private EnrollmentDto GetEnrollmentForNewStudent(Study studies)
         {
             _sqlCommand.CommandText = FirstSemesterEnrollmentForStudiesQuery;
             using var sqlDataReader = _sqlCommand.ExecuteReader();
@@ -103,7 +104,7 @@ namespace Cw10.Services.DatabaseServices.MssqlDbStudentServiceHelpers
             return PrepareNewEnrollment(studies);
         }
 
-        private Enrollment PrepareNewEnrollment(Studies studies)
+        private EnrollmentDto PrepareNewEnrollment(Study studies)
         {
             _sqlCommand.CommandText = InsertFirstSemesterEnrollmentForStudiesQuery;
             _sqlCommand.Parameters.AddWithValue("EnrollmentDate", _enrollmentDate);
@@ -112,7 +113,7 @@ namespace Cw10.Services.DatabaseServices.MssqlDbStudentServiceHelpers
             return InsertedEnrollment(studies.Name);
         }
 
-        private Enrollment InsertedEnrollment(string studiesName)
+        private EnrollmentDto InsertedEnrollment(string studiesName)
         {
             _sqlCommand.CommandText = SelectLastAddedEnrollment;
             using var sqlDataReader = _sqlCommand.ExecuteReader();
@@ -120,9 +121,9 @@ namespace Cw10.Services.DatabaseServices.MssqlDbStudentServiceHelpers
             return SqlDataReaderToEnrollment(sqlDataReader, studiesName);
         }
 
-        private static Enrollment SqlDataReaderToEnrollment(IDataRecord sqlDataReader, string studiesName)
+        private static EnrollmentDto SqlDataReaderToEnrollment(IDataRecord sqlDataReader, string studiesName)
         {
-            return new Enrollment
+            return new EnrollmentDto
             {
                 IdEnrollment = (int) sqlDataReader["IdEnrollment"],
                 Semester = (int) sqlDataReader["Semester"],

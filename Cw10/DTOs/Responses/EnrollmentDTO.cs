@@ -1,8 +1,8 @@
 using System;
 
-namespace Cw10.ModelsManual
+namespace Cw10.DTOs.Responses
 {
-    public class Enrollment
+    public class EnrollmentDto
     {
         public int IdEnrollment { get; set; }
         public int Semester { get; set; }

@@ -1,6 +1,6 @@
 ﻿#nullable disable
 
-namespace Cw10.Models
+namespace Cw10.Models.StudentsDatabase
 {
     public class RoleStudent
     {

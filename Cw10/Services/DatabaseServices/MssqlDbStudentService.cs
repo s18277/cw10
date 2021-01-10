@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 using Cw10.DTOs.Requests;
 using Cw10.DTOs.Responses;
 using Cw10.DTOs.ResultContainers;
-using Cw10.ModelsManual;
 using Cw10.Services.DatabaseServices.MssqlDbStudentServiceHelpers;
 using Cw10.Services.EncryptionServices;
 
@@ -21,12 +21,20 @@ namespace Cw10.Services.DatabaseServices
             _encryptionService = encryptionService;
         }
 
-        public IEnumerable<Student> GetAllStudents()
+        public IEnumerable<GetAllStudentsStudentResponse> GetAllStudents()
         {
             using var sqlConnection = new SqlConnection(ConnectionString);
             using var sqlCommand = new SqlCommand {Connection = sqlConnection};
             sqlConnection.Open();
-            return new MssqlDbGetStudentServiceHelper(sqlCommand).GetAllStudents();
+            return new MssqlDbGetStudentServiceHelper(sqlCommand).GetAllStudents().Select(student =>
+                new GetAllStudentsStudentResponse
+                {
+                    IndexNumber = student.IndexNumber,
+                    FirstName = student.FirstName,
+                    LastName = student.LastName,
+                    BirthDate = student.BirthDate,
+                    IdEnrollment = student.IdEnrollment
+                });
         }
 
         public GetSingleStudentResponse GetStudent(string indexNumber)
@@ -58,7 +66,7 @@ namespace Cw10.Services.DatabaseServices
             }
         }
 
-        public Enrollment PromoteStudents(PromoteStudentsRequest promoteStudentsRequest)
+        public EnrollmentDto PromoteStudents(PromoteStudentsRequest promoteStudentsRequest)
         {
             using var sqlConnection = new SqlConnection(ConnectionString);
             using var sqlCommand = new SqlCommand("PromoteStudents", sqlConnection)
@@ -68,7 +76,7 @@ namespace Cw10.Services.DatabaseServices
             sqlConnection.Open();
             var sqlDataReader = sqlCommand.ExecuteReader();
             if (!sqlDataReader.Read()) return null;
-            return new Enrollment
+            return new EnrollmentDto
             {
                 IdEnrollment = (int) sqlDataReader["IdEnrollment"],
                 Semester = (int) sqlDataReader["Semester"],

@@ -1,5 +1,6 @@
 using System.Linq;
 using Cw10.Middlewares;
+using Cw10.Models.StudentsDatabase;
 using Cw10.Services.AuthenticationServices;
 using Cw10.Services.DatabaseServices;
 using Cw10.Services.EncryptionServices;
@@ -35,7 +36,8 @@ namespace Cw10
                     TokenValidationParametersGenerator.GenerateTokenValidationParameters());
 
             services.AddTransient<ILoggingService, FileLoggingService>();
-            services.AddScoped<IDbStudentService, MssqlDbStudentService>();
+            services.AddScoped<IDbStudentService, EntityFrameworkCoreDbStudentService>();
+            services.AddScoped<StudentsDbContext, StudentsDbContext>();
             services.AddScoped<IAuthenticationService, MssqlDbAuthenticationService>();
             services.AddSingleton<IEncryptionService, SaltedHashEncryptionService>();
             services.AddControllers();

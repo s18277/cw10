@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using Cw10.DTOs.Responses;
-using Cw10.ModelsManual;
+using Cw10.Models.StudentsDatabase;
 
 namespace Cw10.Services.DatabaseServices.MssqlDbStudentServiceHelpers
 {

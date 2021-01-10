@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Cw10.ModelsManual
+namespace Cw10.DTOs.Responses
 {
-    public class Student
+    public class GetAllStudentsStudentResponse
     {
         public string IndexNumber { get; set; }
         public string FirstName { get; set; }
