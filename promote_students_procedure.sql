@@ -1,7 +1,7 @@
 -- Instrukcja MS-SQL tworząca procedurę składowaną promująca studentów na nowy semestr.
 
 DROP PROCEDURE PromoteStudents;
-CREATE PROCEDURE PromoteStudents @Studies NVARCHAR(100), @Semester INT
+CREATE PROCEDURE PromoteStudents @Studies NVARCHAR(MAX), @Semester INT
 AS
 BEGIN
     SET XACT_ABORT ON

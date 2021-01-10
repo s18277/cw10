@@ -129,7 +129,7 @@ namespace Cw10.Services.DatabaseServices.MssqlDbStudentServiceHelpers
                 Semester = (int) sqlDataReader["Semester"],
                 IdStudy = (int) sqlDataReader["IdStudy"],
                 StartDate = DateTime.Parse(sqlDataReader["StartDate"].ToString()!),
-                StudiesName = studiesName
+                Name = studiesName
             };
         }
 

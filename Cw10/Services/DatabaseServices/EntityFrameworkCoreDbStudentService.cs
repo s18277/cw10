@@ -84,7 +84,7 @@ namespace Cw10.Services.DatabaseServices
                     IdEnrollment = enrollment.IdEnrollment,
                     Semester = enrollment.Semester,
                     IdStudy = enrollment.IdStudy,
-                    StudiesName = studies.Name,
+                    Name = studies.Name,
                     StartDate = enrollment.StartDate
                 }
             };
@@ -92,7 +92,16 @@ namespace Cw10.Services.DatabaseServices
 
         public EnrollmentDto PromoteStudents(PromoteStudentsRequest promoteStudentsRequest)
         {
-            throw new NotImplementedException();
+            var studies = promoteStudentsRequest.Studies;
+            var semester = promoteStudentsRequest.Semester;
+            try {
+                return _dbContext.StudentPromotions
+                    .FromSqlInterpolated($"PromoteStudents {studies}, {semester}")
+                    .AsEnumerable().FirstOrDefault();}
+            catch (InvalidOperationException)
+            {
+                return null;
+            }
         }
 
         public SingleStudentAuthenticationData GetStudentsAuthenticationData(string indexNumber)

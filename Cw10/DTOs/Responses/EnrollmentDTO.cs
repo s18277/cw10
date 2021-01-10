@@ -7,7 +7,7 @@ namespace Cw10.DTOs.Responses
         public int IdEnrollment { get; set; }
         public int Semester { get; set; }
         public int IdStudy { get; set; }
-        public string StudiesName { get; set; }
+        public string Name { get; set; }
         public DateTime StartDate { get; set; }
     }
 }

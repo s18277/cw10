@@ -83,7 +83,7 @@ namespace Cw10.Services.DatabaseServices
                 IdEnrollment = (int) sqlDataReader["IdEnrollment"],
                 Semester = (int) sqlDataReader["Semester"],
                 IdStudy = (int) sqlDataReader["IdStudy"],
-                StudiesName = sqlDataReader["Name"].ToString(),
+                Name = sqlDataReader["Name"].ToString(),
                 StartDate = DateTime.Parse(sqlDataReader["StartDate"].ToString()!)
             };
         }

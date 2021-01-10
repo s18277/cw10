@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Cw10.DTOs.Responses;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 #nullable disable
@@ -25,6 +26,7 @@ namespace Cw10.Models.StudentsDatabase
         public virtual DbSet<RoleStudent> RoleStudents { get; set; }
         public virtual DbSet<Student> Students { get; set; }
         public virtual DbSet<Study> Studies { get; set; }
+        public virtual DbSet<EnrollmentDto> StudentPromotions { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -109,6 +111,8 @@ namespace Cw10.Models.StudentsDatabase
 
                 entity.Property(e => e.Name).IsRequired();
             });
+
+            modelBuilder.Entity<EnrollmentDto>(entity => { entity.HasNoKey(); });
 
             OnModelCreatingPartial(modelBuilder);
         }
