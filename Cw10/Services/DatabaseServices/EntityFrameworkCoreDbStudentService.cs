@@ -60,12 +60,31 @@ namespace Cw10.Services.DatabaseServices
 
         public SingleStudentAuthenticationData GetStudentsAuthenticationData(string indexNumber)
         {
-            throw new NotImplementedException();
+            return _dbContext.Students
+                .Where(student => student.IndexNumber == indexNumber)
+                .Include(student => student.RoleStudents)
+                .ThenInclude(roleStudent => roleStudent.IdRoleNavigation)
+                .Select(student => new SingleStudentAuthenticationData
+                {
+                    IndexNumber = student.IndexNumber,
+                    FirstName = student.FirstName,
+                    LastName = student.LastName,
+                    SaltPasswordHash = student.SaltPasswordHash,
+                    RefreshToken = student.RefreshToken,
+                    Roles = student.RoleStudents.Select(roleStudent => roleStudent.IdRoleNavigation.RoleName).ToArray()
+                }).FirstOrDefault();
         }
 
         public bool UpdateRefreshToken(string username, string refreshToken)
         {
-            throw new NotImplementedException();
+            var student = new Student
+            {
+                IndexNumber = username,
+                RefreshToken = refreshToken
+            };
+            _dbContext.Attach(student);
+            _dbContext.Entry(student).Property("RefreshToken").IsModified = true;
+            return _dbContext.SaveChanges() != 0;
         }
     }
 }
