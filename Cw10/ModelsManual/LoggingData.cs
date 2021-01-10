@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Cw10.Models
+namespace Cw10.ModelsManual
 {
     public class LoggingData
     {

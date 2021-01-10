@@ -2,7 +2,7 @@
 using Cw10.DTOs.Requests;
 using Cw10.DTOs.Responses;
 using Cw10.DTOs.ResultContainers;
-using Cw10.Models;
+using Cw10.ModelsManual;
 
 namespace Cw10.Services.DatabaseServices
 {

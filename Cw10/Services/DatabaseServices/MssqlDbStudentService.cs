@@ -5,7 +5,7 @@ using System.Data.SqlClient;
 using Cw10.DTOs.Requests;
 using Cw10.DTOs.Responses;
 using Cw10.DTOs.ResultContainers;
-using Cw10.Models;
+using Cw10.ModelsManual;
 using Cw10.Services.DatabaseServices.MssqlDbStudentServiceHelpers;
 using Cw10.Services.EncryptionServices;
 

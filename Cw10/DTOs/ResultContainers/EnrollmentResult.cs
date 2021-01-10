@@ -1,4 +1,4 @@
-using Cw10.Models;
+using Cw10.ModelsManual;
 
 namespace Cw10.DTOs.ResultContainers
 {

@@ -4,7 +4,7 @@ using System.Data.SqlClient;
 using Cw10.DTOs.Requests;
 using Cw10.DTOs.ResultContainers;
 using Cw10.Exceptions;
-using Cw10.Models;
+using Cw10.ModelsManual;
 
 namespace Cw10.Services.DatabaseServices.MssqlDbStudentServiceHelpers
 {
